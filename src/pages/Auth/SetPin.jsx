@@ -2,8 +2,10 @@ import { useForm } from "react-hook-form";
 import { endpoints } from "../../api/axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
+
 import { KeyRound, Loader2, Lock } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+
 const SetPin = () => {
   const {
     register,
@@ -12,21 +14,22 @@ const SetPin = () => {
   } = useForm();
   const navigate = useNavigate();
   const location = useLocation();
-  const { updateUser } = useAuth(); 
+  const { updateUser } = useAuth();
+
   const onSubmit = async (data) => {
-   try {
-    const payload = {
+    try {
+      const payload = {
         password: data.password,
-        newPin: String(data.pin), 
+        newPin: String(data.pin),
       };
 
       await endpoints.auth.setPin(payload);
-       updateUser({ isPinSet: true });
-    toast.success("PIN set successfully!");
+      updateUser({ isPinSet: true });
+      toast.success("PIN set successfully!");
 
-    const returnUrl = location.state?.returnUrl || '';
-    navigate(returnUrl);
-  } catch (error) {
+      const returnUrl = location.state?.returnUrl || "";
+      navigate(returnUrl);
+    } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Failed to set PIN");
     }
@@ -45,9 +48,12 @@ const SetPin = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-       
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">
+          {/* Added htmlFor */}
+          <label
+            htmlFor="password"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
             Current Password
           </label>
           <div className="relative">
@@ -55,6 +61,7 @@ const SetPin = () => {
               <Lock className="h-5 w-5 text-slate-400" />
             </div>
             <input
+              id="password" // Added matching id
               type="password"
               {...register("password", {
                 required: "Password is required to set PIN",
@@ -70,12 +77,16 @@ const SetPin = () => {
           )}
         </div>
 
-        
         <div>
-          <label className="block text-sm font-bold text-slate-700 mb-2 text-center uppercase tracking-wider">
+          {/* Added htmlFor */}
+          <label
+            htmlFor="pin"
+            className="block text-sm font-bold text-slate-700 mb-2 text-center uppercase tracking-wider"
+          >
             New 4-Digit PIN
           </label>
           <input
+            id="pin" // Added matching id
             type="password"
             maxLength={4}
             {...register("pin", {

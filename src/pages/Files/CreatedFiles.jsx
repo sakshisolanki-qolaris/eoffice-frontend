@@ -1,29 +1,25 @@
-import { useEffect, useState } from 'react';
-import { endpoints } from '../../api/axios';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { Eye, Loader2, FilePlus, PenTool } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query'; 
+import { endpoints } from "../../api/axios";
+import { useNavigate } from "react-router-dom";
+import { Eye, Loader2, FilePlus, PenTool } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 const CreatedFiles = () => {
-
   const navigate = useNavigate();
-  const { user } = useAuth(); 
-
 
   const { data: files = [], isLoading } = useQuery({
-    queryKey: ['createdFiles'],
+    queryKey: ["createdFiles"],
     queryFn: async () => {
       const { data } = await endpoints.files.drafts();
       return data.data;
-    }
+    },
   });
 
-  if (isLoading) return (
-    <div className="flex justify-center items-center h-64">
-      <Loader2 className="animate-spin text-teal-600" size={32} />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="animate-spin text-teal-600" size={32} />
+      </div>
+    );
 
   return (
     <div className="space-y-6 animate-fade-in-up">
@@ -52,20 +48,37 @@ const CreatedFiles = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="text-xs font-bold uppercase tracking-wider text-white">
-                  <th className="p-4 bg-teal-600 border-r border-teal-500/30 rounded-tl-lg">File Number</th>
-                  <th className="p-4 bg-teal-600 border-r border-teal-500/30">Subject</th>
-                  <th className="p-4 bg-teal-600 border-r border-teal-500/30">Last Remark</th>
-                  <th className="p-4 bg-teal-600 text-center rounded-tr-lg">Action</th>
+                  <th className="p-4 bg-teal-600 border-r border-teal-500/30 rounded-tl-lg">
+                    File Number
+                  </th>
+                  <th className="p-4 bg-teal-600 border-r border-teal-500/30">
+                    Subject
+                  </th>
+                  <th className="p-4 bg-teal-600 border-r border-teal-500/30">
+                    Last Remark
+                  </th>
+                  <th className="p-4 bg-teal-600 text-center rounded-tr-lg">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {files.map((file) => (
-                  <tr key={file.id} className="hover:bg-slate-50 transition-colors group">
-                    <td className="p-4 font-mono text-sm text-teal-700 font-medium">{file.fileNumber}</td>
-                    <td className="p-4 font-medium text-slate-800">{file.subject}</td>
-                    <td className="p-4 text-sm text-slate-600 italic">"{file.lastRemark}"</td>
+                  <tr
+                    key={file.id}
+                    className="hover:bg-slate-50 transition-colors group"
+                  >
+                    <td className="p-4 font-mono text-sm text-teal-700 font-medium">
+                      {file.fileNumber}
+                    </td>
+                    <td className="p-4 font-medium text-slate-800">
+                      {file.subject}
+                    </td>
+                    <td className="p-4 text-sm text-slate-600 italic">
+                      "{file.lastRemark}"
+                    </td>
                     <td className="p-4 text-center">
-                      <button 
+                      <button
                         onClick={() => navigate(`/files/${file.id}`)}
                         className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-all"
                       >

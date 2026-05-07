@@ -6,16 +6,20 @@ import { Loader2, FilePlus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 const CreateFile = () => {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm();
   const navigate = useNavigate();
 
   const { data: constants, isLoading: isConstantsLoading } = useQuery({
-    queryKey: ['appConstants'],
+    queryKey: ["appConstants"],
     queryFn: async () => {
       const response = await endpoints.common.constants();
       return response.data.data;
     },
-    staleTime: 1000 * 60 * 60 * 24, 
+    staleTime: 1000 * 60 * 60 * 24,
   });
 
   const onSubmit = async (data) => {
@@ -41,17 +45,26 @@ const CreateFile = () => {
           <FilePlus size={24} />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-slate-800">Initiate New e-File</h2>
-          <p className="text-sm text-slate-500">Fill in the details to start a new file movement.</p>
+          <h2 className="text-xl font-bold text-slate-800">
+            Initiate New e-File
+          </h2>
+          <p className="text-sm text-slate-500">
+            Fill in the details to start a new file movement.
+          </p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-6">
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">
+          {/* Added htmlFor attribute */}
+          <label
+            htmlFor="subject"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
             Subject <span className="text-red-500">*</span>
           </label>
           <input
+            id="subject" // Added matching id
             {...register("subject", {
               required: "Subject is required",
               minLength: { value: 5, message: "Min 5 chars" },
@@ -59,38 +72,49 @@ const CreateFile = () => {
             className="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
             placeholder="e.g. Budget Approval"
           />
-          {errors.subject && <span className="text-xs text-red-500 mt-1 block">{errors.subject.message}</span>}
+          {errors.subject && (
+            <span className="text-xs text-red-500 mt-1 block">
+              {errors.subject.message}
+            </span>
+          )}
         </div>
 
-      <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Priority {isConstantsLoading && <Loader2 className="inline animate-spin ml-2 text-slate-400" size={14} />}
-            </label>
-            <select
-              {...register("priority")}
-              className="w-full border border-slate-300 rounded-lg p-3 bg-white outline-none disabled:bg-slate-50"
-              disabled={isConstantsLoading}
-            >
-             
-              {constants?.PRIORITY ? (
-                Object.values(constants.PRIORITY).map((priorityValue) => (
-                  <option key={priorityValue} value={priorityValue}>
-                 
-                    {priorityValue.charAt(0).toUpperCase() + priorityValue.slice(1).toLowerCase()}
-                  </option>
-                ))
-              ) : (
-              
-                <>
-                  <option value="LOW">Low</option>
-                  <option value="MEDIUM">Medium</option>
-                  <option value="HIGH">High</option>
-                </>
-              )}
-            </select>
+        <div>
+          {/* Added htmlFor attribute */}
+          <label
+            htmlFor="priority"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
+            Priority{" "}
+            {isConstantsLoading && (
+              <Loader2
+                className="inline animate-spin ml-2 text-slate-400"
+                size={14}
+              />
+            )}
+          </label>
+          <select
+            id="priority" // Added matching id
+            {...register("priority")}
+            className="w-full border border-slate-300 rounded-lg p-3 bg-white outline-none disabled:bg-slate-50"
+            disabled={isConstantsLoading}
+          >
+            {constants?.PRIORITY ? (
+              Object.values(constants.PRIORITY).map((priorityValue) => (
+                <option key={priorityValue} value={priorityValue}>
+                  {priorityValue.charAt(0).toUpperCase() +
+                    priorityValue.slice(1).toLowerCase()}
+                </option>
+              ))
+            ) : (
+              <>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+              </>
+            )}
+          </select>
         </div>
-
-       
 
         <div className="pt-4 flex justify-end">
           <button
@@ -98,7 +122,11 @@ const CreateFile = () => {
             disabled={isSubmitting}
             className="bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 font-semibold shadow-lg shadow-teal-200 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Create File"}
+            {isSubmitting ? (
+              <Loader2 className="animate-spin" size={20} />
+            ) : (
+              "Create File"
+            )}
           </button>
         </div>
       </form>

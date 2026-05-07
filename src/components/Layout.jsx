@@ -1,45 +1,51 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { 
-  LayoutDashboard, Inbox, Send, Search, FilePlus, UserPlus, KeyRound, LogOut, Lock , Users, PenTool
-} from 'lucide-react';
-import clsx from 'clsx';
-import { useQueryClient } from '@tanstack/react-query'; 
-import { io } from 'socket.io-client'; 
-import toast from 'react-hot-toast'; 
+import { Outlet, Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import {
+  Inbox,
+  Send,
+  Search,
+  FilePlus,
+  UserPlus,
+  KeyRound,
+  LogOut,
+  Lock,
+  Users,
+  PenTool,
+} from "lucide-react";
+import clsx from "clsx";
+import { useQueryClient } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+import toast from "react-hot-toast";
 const Layout = () => {
-
   const { user, logout } = useAuth();
   const location = useLocation();
 
-  const queryClient = useQueryClient(); 
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    
     if (!user) return;
 
-    const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '') || 'http://localhost:5000';
-    
-    
+    const baseUrl =
+      import.meta.env.VITE_API_BASE_URL?.replace("/api/v1", "") ||
+      "http://localhost:5000";
+
     const socket = io(baseUrl, {
-      withCredentials: true, 
-      query: { userId: user.id || user._id } 
+      withCredentials: true,
+      query: { userId: user.id || user._id },
     });
 
-    socket.on('connect', () => {
-      console.log('Connected to real-time notification service');
+    socket.on("connect", () => {
+      console.log("Connected to real-time notification service");
     });
 
-  
-    socket.on('new_file_received', (data) => {
-      
+    socket.on("new_file_received", (data) => {
       toast.success(
-        `New File Received!\nFile No: ${data?.fileNumber || 'Check your inbox'}`, 
-        { duration: 5000 }
+        `New File Received!\nFile No: ${data?.fileNumber || "Check your inbox"}`,
+        { duration: 5000 },
       );
-      
-      queryClient.invalidateQueries({ queryKey: ['inboxFiles'] });
+
+      queryClient.invalidateQueries({ queryKey: ["inboxFiles"] });
     });
 
     return () => {
@@ -47,35 +53,39 @@ const Layout = () => {
     };
   }, [user, queryClient]);
 
-
   const navItems = [
-    { label: 'Create File', path: '/files/create', icon: FilePlus },
-    { label: 'Draft', path: '/files/created', icon: PenTool },
-    { label: 'Inbox', path: '/files/inbox', icon: Inbox },
-    { label: 'Sent Files', path: '/files/outbox', icon: Send },
-    { label: 'Search Files', path: '/search', icon: Search },
-    { label: 'Change Password', path: '/auth/change-password', icon: Lock }
+    { label: "Create File", path: "/files/create", icon: FilePlus },
+    { label: "Draft", path: "/files/created", icon: PenTool },
+    { label: "Inbox", path: "/files/inbox", icon: Inbox },
+    { label: "Sent Files", path: "/files/outbox", icon: Send },
+    { label: "Search Files", path: "/search", icon: Search },
+    { label: "Change Password", path: "/auth/change-password", icon: Lock },
   ];
 
-  if (user?.systemRole === 'ADMIN') {
-    navItems.push({ label: 'Register User', path: '/users/create', icon: UserPlus });
+  if (user?.systemRole === "ADMIN") {
+    navItems.push({
+      label: "Register User",
+      path: "/users/create",
+      icon: UserPlus,
+    });
   }
-   if (user?.systemRole === 'ADMIN' || user.designation === 'PRESIDENT') {
-    navItems.push({ label: 'Manage Users', path: '/users', icon: Users });
+  if (user?.systemRole === "ADMIN" || user.designation === "PRESIDENT") {
+    navItems.push({ label: "Manage Users", path: "/users", icon: Users });
   }
 
-  navItems.push({ label: 'Set PIN', path: '/auth/set-pin', icon: KeyRound });
+  navItems.push({ label: "Set PIN", path: "/auth/set-pin", icon: KeyRound });
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900 print:bg-white print:min-h-0 print:h-auto print:block">
-      
       {/* 🟢 2. SIDEBAR: Added print:hidden to completely remove it when printing */}
       <aside className="w-64 flex flex-col h-screen fixed left-0 top-0 z-10 bg-slate-900 text-white shadow-xl print:hidden">
         <div className="p-6 border-b border-slate-800">
           <h1 className="text-xl font-bold tracking-wide text-white">
             e-Office
           </h1>
-          <p className="text-[10px] text-teal-400 uppercase tracking-wider mt-1">Maharashtra Mandal Raipur</p>
+          <p className="text-[10px] text-teal-400 uppercase tracking-wider mt-1">
+            Maharashtra Mandal Raipur
+          </p>
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -88,12 +98,15 @@ const Layout = () => {
                 to={item.path}
                 className={clsx(
                   "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200",
-                  isActive 
-                    ? "bg-teal-600 text-white shadow-md shadow-teal-900/20" 
-                    : "text-slate-400 hover:bg-slate-800 hover:text-white" 
+                  isActive
+                    ? "bg-teal-600 text-white shadow-md shadow-teal-900/20"
+                    : "text-slate-400 hover:bg-slate-800 hover:text-white",
                 )}
               >
-                <Icon size={18} className={isActive ? "text-white" : "text-slate-400"} />
+                <Icon
+                  size={18}
+                  className={isActive ? "text-white" : "text-slate-400"}
+                />
                 {item.label}
               </Link>
             );
@@ -106,11 +119,15 @@ const Layout = () => {
               {user?.fullName?.charAt(0)}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-medium truncate text-white">{user?.fullName}</p>
-              <p className="text-[10px] text-slate-400 truncate uppercase">{user?.designation}</p>
+              <p className="text-sm font-medium truncate text-white">
+                {user?.fullName}
+              </p>
+              <p className="text-[10px] text-slate-400 truncate uppercase">
+                {user?.designation}
+              </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={logout}
             className="flex items-center gap-2 w-full px-3 py-2 text-xs font-bold text-red-400 hover:bg-red-500/10 rounded-lg transition-colors uppercase tracking-wider"
           >

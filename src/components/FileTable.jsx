@@ -1,6 +1,19 @@
-import { Link } from 'react-router-dom';
-import clsx from 'clsx';
-import { Eye } from 'lucide-react';
+import { Link } from "react-router-dom";
+import clsx from "clsx";
+import { Eye } from "lucide-react";
+import PropTypes from "prop-types";
+
+const getPriorityClass = (priority) => {
+  if (priority === "HIGH") return "bg-red-100 text-red-700";
+  if (priority === "MEDIUM") return "bg-amber-100 text-amber-700";
+  return "bg-green-100 text-green-700";
+};
+
+const getStatusClass = (status) => {
+  if (status === "APPROVED") return "bg-green-100 text-green-800";
+  if (status === "REJECTED") return "bg-red-100 text-red-800";
+  return "bg-blue-100 text-blue-800";
+};
 
 const FileTable = ({ files, title, emptyMessage = "No files found" }) => {
   return (
@@ -22,33 +35,43 @@ const FileTable = ({ files, title, emptyMessage = "No files found" }) => {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {files.map((file) => (
-              <tr key={file.id} className="hover:bg-blue-50/30 transition-colors group">
-                <td className="px-6 py-4 font-mono text-slate-600">{file.fileNumber}</td>
-                <td className="px-6 py-4 font-medium text-slate-900 max-w-xs truncate" title={file.subject}>
+              <tr
+                key={file.id}
+                className="hover:bg-blue-50/30 transition-colors group"
+              >
+                <td className="px-6 py-4 font-mono text-slate-600">
+                  {file.fileNumber}
+                </td>
+                <td
+                  className="px-6 py-4 font-medium text-slate-900 max-w-xs truncate"
+                  title={file.subject}
+                >
                   {file.subject}
                 </td>
                 <td className="px-6 py-4 text-slate-600">{file.type}</td>
                 <td className="px-6 py-4">
-                  <span className={clsx(
-                    "px-2.5 py-1 rounded-full text-xs font-semibold",
-                    file.priority === 'HIGH' ? "bg-red-100 text-red-700" : 
-                    file.priority === 'MEDIUM' ? "bg-amber-100 text-amber-700" : 
-                    "bg-green-100 text-green-700"
-                  )}>{file.priority}</span>
+                  <span
+                    className={clsx(
+                      "px-2.5 py-1 rounded-full text-xs font-semibold",
+                      getPriorityClass(file.priority),
+                    )}
+                  >
+                    {file.priority}
+                  </span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={clsx(
-                    "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-                    file.status === 'APPROVED' ? "bg-green-100 text-green-800" :
-                    file.status === 'REJECTED' ? "bg-red-100 text-red-800" :
-                    "bg-blue-100 text-blue-800"
-                  )}>
-                    {file.status.replace('_', ' ')}
+                  <span
+                    className={clsx(
+                      "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+                      getStatusClass(file.status),
+                    )}
+                  >
+                    {file.status.replace("_", " ")}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <Link 
-                    to={`/files/${file.id}`} 
+                  <Link
+                    to={`/files/${file.id}`}
                     className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium text-xs bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"
                   >
                     <Eye size={14} /> View
@@ -58,7 +81,10 @@ const FileTable = ({ files, title, emptyMessage = "No files found" }) => {
             ))}
             {files.length === 0 && (
               <tr>
-                <td colSpan="6" className="px-6 py-12 text-center text-slate-400">
+                <td
+                  colSpan="6"
+                  className="px-6 py-12 text-center text-slate-400"
+                >
                   {emptyMessage}
                 </td>
               </tr>
@@ -68,6 +94,21 @@ const FileTable = ({ files, title, emptyMessage = "No files found" }) => {
       </div>
     </div>
   );
+};
+
+FileTable.propTypes = {
+  files: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      fileNumber: PropTypes.string,
+      subject: PropTypes.string,
+      type: PropTypes.string,
+      priority: PropTypes.string,
+      status: PropTypes.string,
+    }),
+  ).isRequired,
+  title: PropTypes.string.isRequired,
+  emptyMessage: PropTypes.string,
 };
 
 export default FileTable;

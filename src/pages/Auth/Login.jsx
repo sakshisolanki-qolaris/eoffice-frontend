@@ -1,56 +1,59 @@
-import { useForm } from 'react-hook-form';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Loader2, AlertCircle } from 'lucide-react';
-import logo from '../../assets/logo.png';
-import banner from '../../assets/banner.jpg';
-import gradient from '../../assets/gradient.png';
-import { Link } from 'react-router-dom';
-const LOGO_URL = logo; 
+import { useForm } from "react-hook-form";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
+import { Loader2, AlertCircle } from "lucide-react";
+import logo from "../../assets/logo.png";
+import banner from "../../assets/banner.jpg";
+import gradient from "../../assets/gradient.png";
+
+const LOGO_URL = logo;
 const BANNER = banner;
 
 const Login = () => {
-  const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm();
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-   try {
-      // If login is successful, it resolves and navigates
+    try {
       await login(data);
-      navigate('/files/inbox');
+      navigate("/files/inbox");
     } catch (error) {
-      // If login fails (401, 429 Rate Limit, etc.), it throws to here
-      setError('root', { 
-        type: 'manual', 
-        message: error.response?.data?.message || 'Invalid Login ID or Password' 
+      setError("root", {
+        type: "manual",
+        message:
+          error.response?.data?.message || "Invalid Login ID or Password",
       });
     }
   };
 
   return (
- <div className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
-  <img  
-  src={gradient} 
-  alt="Background" 
-  className="absolute inset-0 w-full h-full object-cover -z-10" 
-/>
+    <div className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
+      <img
+        src={gradient}
+        alt="Background"
+        className="absolute inset-0 w-full h-full object-cover -z-10"
+      />
       <div className="absolute top-6 flex flex-col items-center animate-fade-in-down z-10">
-        <img 
-          src={LOGO_URL} 
-          alt="Maharashtra Mandal Logo" 
-          className="w-120 h-40 object-contain mb-4 drop-shadow-2xl" 
+        <img
+          src={LOGO_URL}
+          alt="Maharashtra Mandal Logo"
+          className="w-120 h-40 object-contain mb-4 drop-shadow-2xl"
         />
       </div>
 
       <div className="flex flex-col md:flex-row w-full max-w-5xl bg-white/5 backdrop-blur-md rounded-3xl shadow-2xl border border-white/10 overflow-hidden mt-25 md:mt-20">
-        
         {/* Left Side: Illustration */}
         <div className="hidden md:flex md:w-1/2 items-center justify-center p-12 bg-gradient-to-br from-blue-900/80 to-transparent relative">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-          <img 
+          <img
             src={BANNER}
-            alt="Digital Workplace" 
+            alt="Digital Workplace"
             className="w-[430px] h-[360px]"
           />
         </div>
@@ -64,7 +67,9 @@ const Login = () => {
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-white">eOffice</h2>
-                <p className="text-[10px] text-blue-300 uppercase tracking-wide">Digital Workplace Solution</p>
+                <p className="text-[10px] text-blue-300 uppercase tracking-wide">
+                  Digital Workplace Solution
+                </p>
               </div>
             </div>
           </div>
@@ -83,43 +88,72 @@ const Login = () => {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="group">
-              <label className="block text-xs font-medium text-white mb-1.5 ml-1">LOGIN ID / PHONE</label>
-              <input 
-                {...register("phoneNumber", { 
+              {/* Fix: Added htmlFor to associate label with input */}
+              <label
+                htmlFor="phoneNumber"
+                className="block text-xs font-medium text-white mb-1.5 ml-1"
+              >
+                LOGIN ID / PHONE
+              </label>
+              <input
+                id="phoneNumber" // Fix: Added id
+                {...register("phoneNumber", {
                   required: "Phone number is required",
                   pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: "Please enter a valid 10-digit number"
-                  }
+                    value: /^\d{10}$/, // Fix: Used concise character class \d instead of [0-9]
+                    message: "Please enter a valid 10-digit number",
+                  },
                 })}
-                className={`w-full bg-[#0f1a30] border ${errors.phoneNumber ? 'border-red-500' : 'border-blue-800/50'} text-white text-sm rounded-lg focus:ring-2 focus:ring-blue-500 block p-3.5 placeholder-white-700/50 shadow-inner transition-colors`}
+                className={`w-full bg-[#0f1a30] border ${errors.phoneNumber ? "border-red-500" : "border-blue-800/50"} text-white text-sm rounded-lg focus:ring-2 focus:ring-blue-500 block p-3.5 placeholder-white-700/50 shadow-inner transition-colors`}
                 placeholder="Enter 10-digit number"
               />
-              {errors.phoneNumber && <span className="text-xs text-red-400 mt-1 ml-1">{errors.phoneNumber.message}</span>}
+              {errors.phoneNumber && (
+                <span className="text-xs text-red-400 mt-1 ml-1">
+                  {errors.phoneNumber.message}
+                </span>
+              )}
             </div>
-            
+
             <div className="group">
               <div className="flex justify-between items-center mb-1.5 ml-1">
-              <label className="block text-xs font-medium text-white mb-1.5 ml-1">PASSWORD</label>
-              <Link to="/forgot-password" className="text-xs text-white hover:text-blue-300 transition-colors">
-      Forgot Password?
-    </Link>
-  </div>
-              <input 
+                {/* Fix: Added htmlFor to associate label with input */}
+                <label
+                  htmlFor="password"
+                  className="block text-xs font-medium text-white mb-1.5 ml-1"
+                >
+                  PASSWORD
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-white hover:text-blue-300 transition-colors"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
+              <input
+                id="password"
                 type="password"
                 {...register("password", { required: "Password is required" })}
                 className="w-full bg-[#0f1a30] border border-blue-800/50 text-white text-sm rounded-lg focus:ring-2 focus:ring-blue-500 block p-3.5 placeholder-white-700/50 shadow-inner"
                 placeholder="Enter password"
               />
-              {errors.password && <span className="text-xs text-red-400 mt-1 ml-1">{errors.password.message}</span>}
+              {errors.password && (
+                <span className="text-xs text-red-400 mt-1 ml-1">
+                  {errors.password.message}
+                </span>
+              )}
             </div>
 
-            <button 
-              type="submit" 
-              disabled={isSubmitting} 
+            <button
+              type="submit"
+              disabled={isSubmitting}
               className="w-full text-white font-bold py-3.5 rounded-lg shadow-lg flex justify-center items-center gap-2 mt-4 transition-all duration-200 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 hover:-translate-y-0.5 shadow-green-900/30"
             >
-              {isSubmitting ? <Loader2 className="animate-spin" size={20}/> : 'Access System'}
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : (
+                "Access System"
+              )}
             </button>
           </form>
 

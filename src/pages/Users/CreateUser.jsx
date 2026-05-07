@@ -1,64 +1,52 @@
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { endpoints } from '../../api/axios';
-import toast from 'react-hot-toast';
-import { UserPlus, Loader2, AlertTriangle } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useForm } from "react-hook-form";
+import { endpoints } from "../../api/axios";
+import toast from "react-hot-toast";
+import { UserPlus, Loader2, AlertTriangle } from "lucide-react";
+
+// Import your newly extracted hooks and components
+import {
+  useUserFormOptions,
+  SharedUserSelects,
+} from "../../components/SharedUserFormUI";
 
 const CreateUser = () => {
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
-  const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm();
 
- const { data: depts = [] } = useQuery({
-    queryKey: ['departments'],
-    queryFn: async () => {
-      const res = await endpoints.users.getDepartments();
-      return res.data.data;
-    },
-    staleTime: 1000 * 60 * 60 * 24, 
-  });
+  const strongPasswordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-  const { data: designations = [] } = useQuery({
-    queryKey: ['designations'],
-    queryFn: async () => {
-      const res = await endpoints.users.getDesignations();
-      return res.data.data;
-    },
-    staleTime: 1000 * 60 * 60 * 24, 
-  });
-
- 
-  const { data: allowedRoles = [] } = useQuery({
-    queryKey: ['roles'],
-    queryFn: async () => {
-      const res = await endpoints.common.constants();
-      return Object.values(res.data.data.ROLES);
-    },
-    staleTime: 1000 * 60 * 60 * 24, 
-  });
+  // Use the shared hook to fetch all options
+  const { depts, designations, allowedRoles } = useUserFormOptions();
 
   const onSubmit = async (data) => {
     try {
-     const formData = new FormData();
-      formData.append('fullName', data.fullName);
-      formData.append('phoneNumber', data.phoneNumber);
-      formData.append('password', data.password);
-      formData.append('systemRole', data.systemRole);
-      formData.append('designationId', data.designationId);
-      formData.append('departmentId', data.departmentId);
-      
-      if (data.email) formData.append('email', data.email);
-      
+      const formData = new FormData();
+      formData.append("fullName", data.fullName);
+      formData.append("phoneNumber", data.phoneNumber);
+      formData.append("password", data.password);
+      formData.append("systemRole", data.systemRole);
+      formData.append("designationId", data.designationId);
+      formData.append("departmentId", data.departmentId);
+
+      if (data.email) formData.append("email", data.email);
+
       if (data.signature && data.signature.length > 0) {
-        formData.append('signature', data.signature[0]);
+        formData.append("signature", data.signature[0]);
       }
 
       await endpoints.users.create(formData);
-      toast.success('Official registered successfully');
-     
+      toast.success("Official registered successfully");
       reset();
-    } catch (e) { 
-      const errorMessage = e.response?.data?.error || e.response?.data?.message || 'Registration failed';
+    } catch (e) {
+      const errorMessage =
+        e.response?.data?.error ||
+        e.response?.data?.message ||
+        "Registration failed";
       toast.error(errorMessage);
     }
   };
@@ -70,113 +58,157 @@ const CreateUser = () => {
           <UserPlus size={24} />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-slate-800">Register New Official</h2>
-          <p className="text-sm text-slate-500">Create account credentials and assign roles.</p>
+          <h2 className="text-xl font-bold text-slate-800">
+            Register New Official
+          </h2>
+          <p className="text-sm text-slate-500">
+            Create account credentials and assign roles.
+          </p>
         </div>
       </div>
-      
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
-          <input 
-            {...register("fullName", { required: "Full name is required" })} 
-            className="w-full border border-slate-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" 
-            placeholder="Official Name" 
+          <label
+            htmlFor="fullName"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
+            Full Name
+          </label>
+          <input
+            id="fullName"
+            {...register("fullName", { required: "Full name is required" })}
+            className="w-full border border-slate-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+            placeholder="Official Name"
           />
-          {errors.fullName && <span className="text-xs text-red-500 mt-1">{errors.fullName.message}</span>}
-        </div>
-        
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
-          <input 
-            {...register("phoneNumber", { 
-              required: "Phone number is required", 
-              pattern: { value: /^[6-9]\d{9}$/, message: "Invalid mobile number format" } 
-            })} 
-            className="w-full border border-slate-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" 
-            placeholder="10-digit Mobile" 
-          />
-          {errors.phoneNumber && <span className="text-xs text-red-500 mt-1 block">{errors.phoneNumber.message}</span>}
+          {errors.fullName && (
+            <span className="text-xs text-red-500 mt-1">
+              {errors.fullName.message}
+            </span>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-          <input 
-            {...register("password", { 
+          <label
+            htmlFor="phoneNumber"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
+            Phone Number
+          </label>
+          <input
+            id="phoneNumber"
+            {...register("phoneNumber", {
+              required: "Phone number is required",
+              pattern: {
+                value: /^[6-9]\d{9}$/,
+                message: "Invalid mobile number format",
+              },
+            })}
+            className="w-full border border-slate-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+            placeholder="10-digit Mobile"
+          />
+          {errors.phoneNumber && (
+            <span className="text-xs text-red-500 mt-1 block">
+              {errors.phoneNumber.message}
+            </span>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
+            Password
+          </label>
+          <input
+            id="password"
+            {...register("password", {
               required: "Initial password is required",
               pattern: {
                 value: strongPasswordRegex,
-                message: "Must be 8+ chars, 1 uppercase, 1 lowercase, 1 number, 1 special char"
-              }
-            })} 
-            type="password" 
-            className={`w-full border ${errors.password ? 'border-red-300 bg-red-50' : 'border-slate-300'} p-3 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none`} 
-            placeholder="Create Strong Password" 
+                message:
+                  "Must be 8+ chars, 1 uppercase, 1 lowercase, 1 number, 1 special char",
+              },
+            })}
+            type="password"
+            className={`w-full border ${errors.password ? "border-red-300 bg-red-50" : "border-slate-300"} p-3 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none`}
+            placeholder="Create Strong Password"
           />
           {errors.password && (
             <div className="flex items-start gap-1 mt-1 text-xs text-red-500">
-               <AlertTriangle size={12} className="mt-0.5" />
-               <span>{errors.password.message}</span>
+              <AlertTriangle size={12} className="mt-0.5" />
+              <span>{errors.password.message}</span>
             </div>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Email (Optional)</label>
-          <input 
-            {...register("email", { 
-              pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" } 
-            })} 
-            className="w-full border border-slate-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" 
-            placeholder="official@mmd.org" 
-          />
-           {errors.email && <span className="text-xs text-red-500 mt-1">{errors.email.message}</span>}
-        </div>
-
-       
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">System Role</label>
-          <select 
-            {...register("systemRole", { required: true })} 
-            className="w-full border border-slate-300 p-3 rounded-lg bg-white focus:ring-2 focus:ring-teal-500 outline-none"
+          <label
+            htmlFor="email"
+            className="block text-sm font-semibold text-slate-700 mb-2"
           >
-            <option value="">Select Role</option>
-            {allowedRoles.map((role) => (
-                <option key={role} value={role}>
-                    {role.replace('_', ' ')} 
-                </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Designation</label>
-          <select {...register("designationId", { required: true })} className="w-full border border-slate-300 p-3 rounded-lg bg-white focus:ring-2 focus:ring-teal-500 outline-none">
-            {designations.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-          </select>
-        </div>
-
-        <div className="md:col-span-2">
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Department</label>
-          <select {...register("departmentId", { required: true })} className="w-full border border-slate-300 p-3 rounded-lg bg-white focus:ring-2 focus:ring-teal-500 outline-none">
-            {depts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-          </select>
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Digital Signature (Image)</label>
-          <input 
-            type="file" 
-            accept="image/jpeg, image/png, image/jpg"
-            {...register("signature")} 
-            className="w-full border border-slate-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-teal-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" 
+            Email (Optional)
+          </label>
+          <input
+            id="email"
+            {...register("email", {
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: "Invalid email format",
+              },
+            })}
+            className="w-full border border-slate-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+            placeholder="official@mmd.org"
           />
-          <p className="text-xs text-slate-500 mt-1">Allowed: JPG, PNG (Max 100KB)</p>
+          {errors.email && (
+            <span className="text-xs text-red-500 mt-1">
+              {errors.email.message}
+            </span>
+          )}
         </div>
+
+        {/* Use the shared select dropdowns component here */}
+        <SharedUserSelects
+          register={register}
+          allowedRoles={allowedRoles}
+          designations={designations}
+          depts={depts}
+        />
+
+        <div className="md:col-span-2">
+          <label
+            htmlFor="signature"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
+            Digital Signature (Image)
+          </label>
+          <input
+            id="signature"
+            type="file"
+            accept="image/jpeg, image/png, image/jpg"
+            {...register("signature")}
+            className="w-full border border-slate-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-teal-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+          />
+          <p className="text-xs text-slate-500 mt-1">
+            Allowed: JPG, PNG (Max 100KB)
+          </p>
+        </div>
+
         <div className="md:col-span-2 pt-4">
-          <button type="submit" disabled={isSubmitting} className="w-full bg-teal-600 text-white py-3 rounded-xl hover:bg-teal-700 font-bold shadow-md shadow-teal-200 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
-            {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : 'Create Account'}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-teal-600 text-white py-3 rounded-xl hover:bg-teal-700 font-bold shadow-md shadow-teal-200 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <Loader2 className="animate-spin" size={20} />
+            ) : (
+              "Create Account"
+            )}
           </button>
         </div>
       </form>
