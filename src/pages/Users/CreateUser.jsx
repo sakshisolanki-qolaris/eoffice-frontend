@@ -190,9 +190,17 @@ const CreateUser = () => {
             id="signature"
             type="file"
             accept="image/jpeg, image/png, image/jpg"
-            {...register("signature")}
+               {...register("signature", {
+      required: "Digital signature is required",
+    })}
+
             className="w-full border border-slate-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-teal-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
           />
+            {errors.signature && (
+    <p className="text-red-500 text-sm mt-1">
+      {errors.signature.message}
+    </p>
+  )}
           <p className="text-xs text-slate-500 mt-1">
             Allowed: JPG, PNG (Max 100KB)
           </p>
