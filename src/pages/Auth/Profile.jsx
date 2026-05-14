@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useAuth } from "../../context/AuthContext";
 import { endpoints } from "../../api/axios";
 import {
@@ -10,12 +11,33 @@ import {
   Building,
   Key,
   ShieldCheck,
-  Calendar,
   Loader2,
-  PenTool,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+
+// Moved InfoCard outside the main component to prevent recreation on every render
+const InfoCard = ({ icon: Icon, label, value, colorClass = "text-slate-600" }) => (
+  <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100 transition-all hover:shadow-sm">
+    <div className={`p-2 rounded-lg bg-white shadow-sm ${colorClass}`}>
+      <Icon size={20} />
+    </div>
+    <div className="flex-1">
+      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+        {label}
+      </p>
+      <p className="text-sm font-bold text-slate-700 mt-0.5">{value || "N/A"}</p>
+    </div>
+  </div>
+);
+
+// Added prop validation for SonarQube compliance
+InfoCard.propTypes = {
+  icon: PropTypes.elementType.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  colorClass: PropTypes.string,
+};
 
 const Profile = () => {
   const { user, updateUser } = useAuth();
@@ -49,20 +71,6 @@ const Profile = () => {
       </div>
     );
   }
-
-  const InfoCard = ({ icon: Icon, label, value, colorClass = "text-slate-600" }) => (
-    <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100 transition-all hover:shadow-sm">
-      <div className={`p-2 rounded-lg bg-white shadow-sm ${colorClass}`}>
-        <Icon size={20} />
-      </div>
-      <div className="flex-1">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-          {label}
-        </p>
-        <p className="text-sm font-bold text-slate-700 mt-0.5">{value || "N/A"}</p>
-      </div>
-    </div>
-  );
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
@@ -110,11 +118,8 @@ const Profile = () => {
               <InfoCard icon={Building} label="Department" value={profileData?.department} colorClass="text-purple-500" />
               <InfoCard icon={Briefcase} label="Designation" value={profileData?.designation} colorClass="text-orange-500" />
               <InfoCard icon={Shield} label="System Role" value={profileData?.systemRole} colorClass="text-rose-500" />
-              
             </div>
           </div>
-
-         
         </div>
 
         {/* Security Sidebar */}
