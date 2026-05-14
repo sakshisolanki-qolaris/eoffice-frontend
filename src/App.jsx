@@ -11,6 +11,7 @@ const Login = lazy(() => import("./pages/Auth/Login"));
 const ForgotPassword = lazy(() => import("./pages/Auth/ForgotPassword"));
 const SetPin = lazy(() => import("./pages/Auth/SetPin"));
 const ChangePassword = lazy(() => import("./pages/Auth/ChangePassword"));
+const Profile = lazy(() => import("./pages/Auth/Profile"));
 
 const Inbox = lazy(() => import("./pages/Files/Inbox"));
 const Outbox = lazy(() => import("./pages/Files/Outbox"));
@@ -73,6 +74,7 @@ function App() {
             >
               <Route index element={<Navigate to="/files/inbox" replace />} />
               <Route path="auth/change-password" element={<ChangePassword />} />
+              <Route path="profile" element={<Profile />} />
               <Route path="auth/set-pin" element={<SetPin />} />
               <Route path="files/inbox" element={<Inbox />} />
               <Route path="files/outbox" element={<Outbox />} />

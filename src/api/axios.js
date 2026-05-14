@@ -41,6 +41,7 @@ export const endpoints = {
     setPin: (data) => api.post("/auth/set-pin", data),
     forgotPassword: (data) => api.post("/auth/forgot-password", data),
     resetPassword: (data) => api.post("/auth/reset-password", data),
+    getMe: () => api.get("/auth/me"),
   },
   users: {
     create: (data) =>

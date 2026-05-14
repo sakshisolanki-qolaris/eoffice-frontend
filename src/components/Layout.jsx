@@ -12,6 +12,7 @@ import {
   Lock,
   Users,
   PenTool,
+  User,
 } from "lucide-react";
 import clsx from "clsx";
 import { useQueryClient } from "@tanstack/react-query";
@@ -59,6 +60,7 @@ const Layout = () => {
     { label: "Inbox", path: "/files/inbox", icon: Inbox },
     { label: "Sent Files", path: "/files/outbox", icon: Send },
     { label: "Search Files", path: "/search", icon: Search },
+    { label: "Profile", path: "/profile", icon: User },
     { label: "Change Password", path: "/auth/change-password", icon: Lock },
   ];
 
@@ -114,7 +116,10 @@ const Layout = () => {
         </nav>
 
         <div className="p-4 border-t border-slate-800 bg-slate-900">
-          <div className="flex items-center gap-3 px-3 py-2 mb-2 rounded-lg bg-slate-800 border border-slate-700/50">
+          <Link
+            to="/profile"
+            className="flex items-center gap-3 px-3 py-2 mb-2 rounded-lg bg-slate-800 border border-slate-700/50 hover:bg-slate-700/50 transition-colors"
+          >
             <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-xs font-bold text-white shadow-sm border border-teal-500">
               {user?.fullName?.charAt(0)}
             </div>
@@ -126,7 +131,7 @@ const Layout = () => {
                 {user?.designation}
               </p>
             </div>
-          </div>
+          </Link>
           <button
             onClick={logout}
             className="flex items-center gap-2 w-full px-3 py-2 text-xs font-bold text-red-400 hover:bg-red-500/10 rounded-lg transition-colors uppercase tracking-wider"
